@@ -1,3 +1,5 @@
+// [supose to be ok]
+
 // главный файл по режиму visual 
 
 

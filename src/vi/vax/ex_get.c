@@ -1,3 +1,6 @@
+// [a few][library]
+
+
 // Код управляет вводом в командном режиме редактора, где программа читает символы с клавиатуры,
 // интерпретирует команды и выполняет их, при этом обрабатываются такие особенности, как автоотступы 
 // и специфические символы управления (например, ^D для конца ввода).
@@ -80,7 +83,7 @@ int verbose;
 getach()
 {
 	register int c;
-	static char inline[128];
+	static char inputBuffer[128];
 	struct stat statb;
 
 	c = peekc;
@@ -105,26 +108,26 @@ top:
 	}
 	flush();
 	if (intty) {
-		c = read(0, inline, sizeof inline - 4);
+		c = read(0, inputBuffer, sizeof inputBuffer - 4);
 		if (c < 0)
 			return (lastc = EOF);
-		if (c == 0 || inline[c-1] != '\n')
-			inline[c++] = CTRL(d);
-		if (inline[c-1] == '\n')
+		if (c == 0 || inputBuffer[c-1] != '\n')
+			inputBuffer[c++] = CTRL(d);
+		if (inputBuffer[c-1] == '\n')
 			noteinp();
-		inline[c] = 0;
+		inputBuffer[c] = 0;
 		for (c--; c >= 0; c--)
-			if (inline[c] == 0)
-				inline[c] = QUOTE;
-		input = inline;
+			if (inputBuffer[c] == 0)
+				inputBuffer[c] = QUOTE;
+		input = inputBuffer;
 		goto top;
 	}
-	if (read(0, inline, 1) != 1)
+	if (read(0, inputBuffer, 1) != 1)
 		lastc = EOF;
 	else {
-		lastc = inline[0];
+		lastc = inputBuffer[0];
 		if (verbose)
-			write(2, inline, 1);
+			write(2, inputBuffer, 1);
 	}
 	return (lastc);
 }

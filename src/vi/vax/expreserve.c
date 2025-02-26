@@ -1,3 +1,4 @@
+//[a few]
 // This program is designed to ensure that editor buffers, particularly from the ex editor, are saved when 
 // a crash or forced termination happens. It checks the integrity of these files and creates backups with unique 
 // names, notifying users about the recovery options. The preservation is done in /tmp, and the program works both 

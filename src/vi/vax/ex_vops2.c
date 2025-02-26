@@ -1,3 +1,5 @@
+//[library]
+
 // handles text insertion, line manipulation, and user interactions within the editor, particularly in insert mode
 
 /*

@@ -1,3 +1,7 @@
+// [all]
+
+// holy moly that a lot of erros!
+
 // отвечает за взаимодействие с экраном терминала, обеспечивая пользовательский интерфейс с 
 // возможностью редактирования текста, выводом и удалением символов.
 
@@ -14,7 +18,6 @@
 */
 /* Copyright (c) 1981 Regents of the University of California */
 static char *sccsid = "@(#)ex_vput.c	1.3	(9.1	2/9/83)";
-#include "ex.h"
 #include "ex_tty.h"
 #include "ex_vis.h"
 
@@ -226,7 +229,8 @@ vcursat(cp)
 }
 
 /*
- * Put the cursor ``after'' cp.
+ * Put the cursor ``after'' cp.#include "ex.h"
+
  */
 vcursaft(cp)
 	register char *cp;

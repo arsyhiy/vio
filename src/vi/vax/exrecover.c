@@ -1,3 +1,5 @@
+// [a few][library]
+
 // The program you've shared is related to recovering data from a crash of the "ex" editor, specifically 
 // handling the temporary files the editor creates during editing
 

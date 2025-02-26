@@ -1,3 +1,5 @@
+//[unstable][need a test]
+
 // Этот код предоставляет множество функциональных возможностей для редактирования
 // файлов в стиле командного интерфейса Unix, с поддержкой статистики по файлам,
 // обработкой команд и расширенными функциями для работы с аргументами и метасимволами.
@@ -20,6 +22,7 @@ static char *sccsid = "@(#)e_i.c	1.1	(9.1	2/9/83)";
 #include "ex_temp.h"
 #include "ex_tty.h"
 #include "ex_vis.h"
+#include <sys/stat.h>
 
 /*
  * File input/output, source, preserve and recover

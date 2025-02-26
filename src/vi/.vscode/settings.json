@@ -11,6 +11,7 @@
         "stat.h": "c",
         "ex_temp.h": "c",
         "ex_tty.h": "c",
-        "ex_vis.h": "c"
+        "ex_vis.h": "c",
+        "features.h": "c"
     }
 }
