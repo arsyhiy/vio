@@ -10,6 +10,7 @@
         "errno.h": "c",
         "stat.h": "c",
         "ex_temp.h": "c",
-        "ex_tty.h": "c"
+        "ex_tty.h": "c",
+        "ex_vis.h": "c"
     }
 }

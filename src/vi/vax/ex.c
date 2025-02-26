@@ -1,10 +1,13 @@
+// [a few]
+
+
 #include <termios.h>
 #include <unistd.h>
 #include <signal.h>
 #include "ex.h"
-#include "ex_argv.h"
-#include "ex_temp.h"
-#include "ex_tty.h"
+#include "ex_argv.h"// заголовочный файл для выделения памяти и динамической памяти. переписать
+#include "ex_temp.h"// работа с буферами и востановление памяти. переписать
+#include "ex_tty.h"// взаимодействие с терминалом, управление курсором, изменение терминальных флагов и маппинг клавиш. переписать
 
 
 /*

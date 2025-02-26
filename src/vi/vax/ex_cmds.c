@@ -1,18 +1,6 @@
 // важный файл который обрабатывает команды пользователя 
 
-/*
-********************************************************************************
-*                         Copyright (c) 1985 AT&T                              *
-*                           All Rights Reserved                                *
-*                                                                              *
-*                                                                              *
-*          THIS IS UNPUBLISHED PROPRIETARY SOURCE CODE OF AT&T                 *
-*        The copyright notice above does not evidence any actual               *
-*        or intended publication of such source code.                          *
-********************************************************************************
-*/
-/* Copyright (c) 1981 Regents of the University of California */
-static char *sccsid = "@(#)e_c.c	1.1	(9.1	2/9/83)";
+
 #include "ex.h"
 #include "ex_argv.h"
 #include "ex_temp.h"
@@ -566,7 +554,7 @@ quit:
 				vnfl();
 				putpad(exit_ca_mode);
 				flush();
-				resetterm();
+				resetterm();//надо изменить этот механизм так как он устарел
 				unixwt(1, unixex("-i", (char *) 0, 0, 0));
 				vcontin(0);
 				continue;
