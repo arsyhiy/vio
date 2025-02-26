@@ -54,9 +54,9 @@
  * you add to the terminfo data base.
  */
 
-#ifdef UCBV7
-# include <whoami.h> // что это вообще?
-#endif
+// #ifdef UCBV7
+// # include <whoami.h> // что это вообще?
+// #endif
 #include <sys/types.h>// типы?
 #include <ctype.h>// си тайпы?
 #include <errno.h>// вызов ошибки
