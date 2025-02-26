@@ -1,0 +1,15 @@
+{
+    "files.associations": {
+        "unistd.h": "c",
+        "ex_argv.h": "c",
+        "ex.h": "c",
+        "termios.h": "c",
+        "ioctl.h": "c",
+        "sgtty.h": "c",
+        "term.h": "c",
+        "errno.h": "c",
+        "stat.h": "c",
+        "ex_temp.h": "c",
+        "ex_tty.h": "c"
+    }
+}

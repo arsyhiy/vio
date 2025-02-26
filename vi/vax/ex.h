@@ -52,27 +52,26 @@
  */
 
 #ifdef UCBV7
-# include <whoami.h>
+# include <whoami.h> // что это вообще?
 #endif
-#include <sys/types.h>
-#include <ctype.h>
-#include <errno.h>
-#include <signal.h>
-#include <setjmp.h>
-#include <sys/stat.h>
-
+#include <sys/types.h>// типы?
+#include <ctype.h>// си тайпы?
+#include <errno.h>// вызов ошибки
+#include <signal.h>// сигнал?
+#include <setjmp.h>// надо узнать что это такое 
+#include <sys/stat.h>// статы?
 #ifdef USG
-# include <termio.h>
+# include <termio.h>// что это такое 
 typedef struct termio SGTTY;
 #else
 # include <sgtty.h>
-typedef struct sgttyb SGTTY;
+typedef struct sgttyb SGTTY;// что это такое ?
 #endif
 
-#ifdef PAVEL
+#ifdef PAVEL // какой нахую Павел?
 #define SGTTY struct sgttyb	/* trick Pavel curses to not include <curses.h> */
 #endif
-#include "term.h"
+#include "term.h"// терминал?
 #ifdef PAVEL
 #undef SGTTY
 #endif
@@ -95,10 +94,10 @@ typedef struct sgttyb SGTTY;
 
 extern	int errno;
 
-#ifndef VMUNIX
+#ifndef VMUNIX // VMUNIX?
 typedef	short	line;
 #else
-typedef	int	line;
+typedef	int	line; 
 #endif
 typedef	short	bool;
 

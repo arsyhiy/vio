@@ -1,15 +1,11 @@
-//#include <termios.h>
-// #include <unistd.h>
-
-
+#include <termios.h>
+#include <unistd.h>
+#include <signal.h>
 #include "ex.h"
 #include "ex_argv.h"
 #include "ex_temp.h"
 #include "ex_tty.h"
 
-#ifdef TRACE
-char	tttrace[]	= { '/','d','e','v','/','t','t','y','x','x',0 };
-#endif
 
 /*
  * The code for ex is divided as follows:
@@ -72,17 +68,13 @@ char	tttrace[]	= { '/','d','e','v','/','t','t','y','x','x',0 };
  */
 
 
- // эту часть кода надо капитально менять
-//----------------------------------------------------------------------------- 
  main(ac, av)
 	register int ac;
 	register char *av[];
 {
 
-#ifndef __linux__ // было решено пока что вставить __linux__ для будущего разбора
-	char *erpath = EXSTRINGS;
-#endif
 
+	char *erpath = EXSTRINGS;
 	register char *cp;
 	register int c;
 	bool recov = 0;
@@ -92,33 +84,15 @@ char	tttrace[]	= { '/','d','e','v','/','t','t','y','x','x',0 };
 	extern int onemt();
 	extern int oncore();
 	extern int verbose;
-
-
-
-
-
-
-
+	struct termios old_termios, new_termios;
+	normf = tcgetattr(STDIN_FILENO, &old_termios);  // Получаем текущие настройки терминала
 
 	/*
-	 * Immediately grab the tty modes so that we wont
-	 * get messed up if an interrupt comes in quickly.
-	 */
-	//gTTY(2); // заменить на аналог termios.hi
-
-	// struct termios old_termios, new_termios;
-	// tcgetattr(STDIN_FILENO, &old_termios);  // Получаем текущие настройки терминала
-	// NOTE: перед тем как как использовать прости доки по termios пожайлуста!.
-
-	
-
-
-#ifndef __linux__
-	//normf = ttcgetattr(STDIN_FILENO, &old_termios); // тоже старая функция unix для терминала переписываем под termios
-#else
-	normf = tty;
-#endif
-
+	В целом, код совместим с Linux. Однако, чтобы сделать его более гибким и 
+	современным, можно использовать библиотеки ncurses или terminfo для динамического 
+	получения информации о терминале. Также стоит убедиться, что вспомогательные функции,
+	 такие как any(), работают правильно для строковых данных.
+	*/
 
 	ppid = getpid();
 	/* Note - this will core dump if you didn't -DSINGLE in CFLAGS */
@@ -137,12 +111,13 @@ char	tttrace[]	= { '/','d','e','v','/','t','t','y','x','x',0 };
 	if (any('w', av[0]))	/* "view" */
 		value(READONLY) = 1;
 	if (any('d', av[0])) {	/* "edit" or "vedit" */
+
 		value(NOVICE) = 1;
 		value(REPORT) = 1;
 		value(MAGIC) = 0;
 		value(SHOWMODE) = 1;
 	}
-
+	
 #ifndef __linux__
 	/*
 	 * For debugging take files out of . if name is a.out.
@@ -161,28 +136,24 @@ char	tttrace[]	= { '/','d','e','v','/','t','t','y','x','x',0 };
 	}
 #endif
 
-// не удалать этот кусок так-как тут обрабатываюся ошибки
-	// pstop();
-
+	pstop(); // NOTE:  посмотреть реализацию
 	// /*
 	//  * Initialize interrupt handling.
 	//  */
-	// oldhup = signal(SIGHUP, SIG_IGN);
-	// if (oldhup == SIG_DFL)
-	// 	signal(SIGHUP, onhup);
-	// oldquit = signal(SIGQUIT, SIG_IGN);
-	// ruptible = signal(SIGINT, SIG_IGN) == SIG_DFL;
-	// if (signal(SIGTERM, SIG_IGN) == SIG_DFL)
-	// 	signal(SIGTERM, onhup);
-	// if (signal(SIGEMT, SIG_IGN) == SIG_DFL)
-	// 	signal(SIGEMT, onemt);
-	// signal(SIGILL, oncore);
-	// signal(SIGTRAP, oncore);
-	// signal(SIGIOT, oncore);
-	// signal(SIGFPE, oncore);
-	// signal(SIGBUS, oncore);
-	// signal(SIGSEGV, oncore);
-	// signal(SIGPIPE, oncore);
+	oldhup = sigaction(SIGHUP, SIG_IGN);  
+	if (oldhup == SIG_DFL)
+		sigaction(SIGHUP, onhup);
+	oldquit = sigaction(SIGQUIT, SIG_IGN);
+	ruptible = sigaction(SIGINT, SIG_IGN) == SIG_DFL;
+	if (sigaction(SIGTERM, SIG_IGN) == SIG_DFL)
+		sigaction(SIGTERM, onhup);
+	sigaction(SIGILL, oncore);
+	sigaction(SIGTRAP, oncore);
+	sigaction(SIGIOT, oncore);// надо будет смотреть имплементацию этих обработчиков ошибок
+	sigaction(SIGFPE, oncore);
+	sigaction(SIGBUS, oncore);
+	sigaction(SIGSEGV, oncore);
+	sigaction(SIGPIPE, oncore);
 
 	/*
 	 * Initialize end of core pointers.
@@ -192,8 +163,30 @@ char	tttrace[]	= { '/','d','e','v','/','t','t','y','x','x',0 };
 	 * this as ed does, saving a little core, but it will probably
 	 * not often make much difference.
 	 */
-	// fendcore = (line *) sbrk(0);
+
+	/*
+	NOTE: эти две строки кода работают с паматью их надо переписать под linux так как sbrk устарел. надо перепесать под malloc() free() 
+	*/
+	// fendcore = (line *) sbrk(0); 
 	// endcore = fendcore - 2;
+
+	// Предположим, что нужно выделить память для массива line
+	size_t initial_size = 1000; // Размер памяти, который нужно выделить для line (можно настроить по необходимости)
+
+	fendcore = (line *) malloc(sizeof(line) * initial_size); // Выделяем память
+	if (fendcore == NULL) {
+		// Обработка ошибки выделения памяти
+		perror("malloc failed");
+		exit(1);
+	}
+
+	// Для endcore, предположим, что необходимо сместить указатель на два элемента назад
+	endcore = fendcore + initial_size - 2;
+
+	/*
+		в этом куске кода приводится флаги при вызове vi  по типу : $ vi -l
+		обработка ошибок и выделение памяти также как и верхние строки кода должен быть редактирован
+	*/
 
 	/*
 	 * Process flag arguments.
@@ -210,19 +203,13 @@ char	tttrace[]	= { '/','d','e','v','/','t','t','y','x','x',0 };
 		case 'R':
 			value(READONLY) = 1;
 			break;
-
-		case 'T':
-
-
-			break;
-
 		case 'l':
 			value(LISP) = 1;
 			value(SHOWMATCH) = 1;
 			break;
 
 		case 'r':
-			recov++;
+			printf("recover is under construction");
 			break;
 
 		case 'V':
@@ -251,7 +238,7 @@ char	tttrace[]	= { '/','d','e','v','/','t','t','y','x','x',0 };
 
 
 		default:
-			smerror("Unknown option %s\n", av[0]);
+			printf("Unknown option  %s\n", av[0]); // пересмотреть потом реализацию
 			break;
 		}
 		ac--, av++;
@@ -267,7 +254,6 @@ char	tttrace[]	= { '/','d','e','v','/','t','t','y','x','x',0 };
 		ac--, av++;
 	}
 
-
 	/*
 	 * If we are doing a recover and no filename
 	 * was given, then execute an exrecover command with
@@ -275,16 +261,20 @@ char	tttrace[]	= { '/','d','e','v','/','t','t','y','x','x',0 };
 	 * Otherwise set the remembered file name to the first argument
 	 * file name so the "recover" initial command will find it.
 	 */
-	if (recov) {
-		if (ac == 0) {
-			ppid = 0;
-			setrupt();
-			execl(EXRECOVER, "exrecover", "-r", 0);
-			filioerr(EXRECOVER);
-			exit(1);
-		}
-		CP(savedfile, *av++), ac--;
-	}
+
+	 /* было решено закоментировать систему востановления файла а не удалить.
+	   переделать систему что бы она создавала swap файл в месте с новым буфером и чтобы можно отключить создание swap файла
+	*/
+	// if (recov) { 
+	// 	if (ac == 0) {
+	// 		ppid = 0;
+	// 		setrupt();
+	// 		execl(EXRECOVER, "exrecover", "-r", 0);
+	// 		filioerr(EXRECOVER);
+	// 		exit(1);
+	// 	}
+	// 	CP(savedfile, *av++), ac--;
+	// }
 
 	/*
 	 * Initialize the argument list.
@@ -302,7 +292,7 @@ char	tttrace[]	= { '/','d','e','v','/','t','t','y','x','x',0 };
 		setrupt();
 		intty = isatty(0);
 		value(PROMPT) = intty;
-		if (cp = getenv("SHELL"))
+		if (cp = getenv("SHELL")) 
 			CP(shell, cp);
 		if (fast)
 			setterm("dumb");
@@ -339,9 +329,10 @@ char	tttrace[]	= { '/','d','e','v','/','t','t','y','x','x',0 };
 	 * visual).
 	 */
 	if (setexit() == 0) {
-		if (recov)
-			globp = "recover";
-		else if (itag)
+		// if (recov)
+		// 	globp = "recover";
+		// else if (itag)
+		if (itag)
 			globp = ivis ? "tag" : "tag|p";
 		else if (argc)
 			globp = "next";
@@ -388,10 +379,6 @@ char	tttrace[]	= { '/','d','e','v','/','t','t','y','x','x',0 };
 	exit(0);
 }
 
-
-//=============================================================================
-
-
 /*
  * Initialization, before editing a new file.
  * Main thing here is to get a new buffer (in fileinit),
@@ -413,7 +400,7 @@ init()
 }
 
 /*
- * Return last component of unix path name p.
+ * Return last component of linux path name p.
  */
 char *
 tailpath(p)
@@ -426,7 +413,3 @@ register char *p;
 			r = p+1;
 	return(r);
 }
-
-
-
-// NOTE: надо капитально чинить этот файл

@@ -262,10 +262,16 @@ main(ac, av)
 		ac--, av++;
 	}
 
+
+/*
+* этот кусок кода обрабатывает C-z
+*/	
 #ifdef SIGTSTP
 	if (!hush && signal(SIGTSTP, SIG_IGN) == SIG_DFL)
 		signal(SIGTSTP, onsusp), dosusp++;
 #endif
+
+
 
 	if (ac && av[0][0] == '+') {
 		firstpat = &av[0][1];

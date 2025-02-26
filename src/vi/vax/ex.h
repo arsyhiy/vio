@@ -1,3 +1,6 @@
+// этот файл вызываеться нетолько в ex.c так что придется его акуратнее редактировать
+
+
 // заголовочный файл ex.c
 
 /*
@@ -60,13 +63,10 @@
 #include <signal.h>// сигнал?
 #include <setjmp.h>// надо узнать что это такое 
 #include <sys/stat.h>// статы?
-#ifdef USG
-# include <termio.h>// что это такое 
-typedef struct termio SGTTY;
-#else
+#include <termios.h>// что это такое 
+typedef struct termios SGTTY;
 # include <sgtty.h>
-typedef struct sgttyb SGTTY;// что это такое ?
-#endif
+
 
 #ifdef PAVEL // какой нахую Павел?
 #define SGTTY struct sgttyb	/* trick Pavel curses to not include <curses.h> */
@@ -194,9 +194,7 @@ var	int	chng;		/* Warn "No write" */
 var	char	*Command;
 var	short	defwind;	/* -w# change default window size */
 var	int	dirtcnt;	/* When >= MAXDIRT, should sync temporary */
-#ifdef TIOCLGET
-	var	bool	dosusp;		/* Do SIGTSTP in visual when ^Z typed */
-#endif
+var	bool	dosusp;		/* Do SIGTSTP in visual when ^Z typed */
 var	bool	edited;		/* Current file is [Edited] */
 var	line	*endcore;	/* Last available core location */
 extern	 bool	endline;	/* Last cmd mode command ended with \n */
