@@ -1,4 +1,8 @@
 // заголовочный файл для выделения памяти и динамической памяти
+
+//NOTE: переписать полносьтю под современные системы
+
+
 /*
 ********************************************************************************
 *                         Copyright (c) 1985 AT&T                              *
@@ -31,7 +35,7 @@ var int	firstln;		/* From +lineno */
 var char	*firstpat;		/* From +/pat	*/
 
 /* Yech... */
-struct	glob {
+struct	glob {	
 	short	argc;			/* Index of current file in argv */
 	short	argc0;			/* Number of arguments in argv */
 	char	*argv[NARGS + 1];	/* WHAT A WASTE! */
